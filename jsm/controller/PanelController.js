@@ -13,51 +13,6 @@ let changeEvent = new Event('change')
 let clickEvent = new Event('click')
 let inputEvent = new Event('input')
 
-class ProgressBar {
-    constructor(title, cancel) {
-        let loadingText = document.getElementById('loadingText');
-        let progressCancelBtn = document.getElementById('progressCancelBtn');
-        let progressModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('progressModal'))
-        let loaderBody = document.getElementById('loaderBody')
-        let loaderCounter = document.getElementById('loadingCounter')
-        let loaderProgressBar = document.getElementById('loadingProgressBar')
-
-        loadingText.innerHTML = title
-        if (cancel) {
-            progressCancelBtn.classList.remove("display", "none")
-            progressCancelBtn.classList.add("display", "inline")
-        } else {
-            progressCancelBtn.classList.remove("display", "inline")
-            progressCancelBtn.classList.add("display", "none")
-        }
-
-        this.progressValue = 0
-
-        let inv = null
-
-        let frame = () => {
-            if (value == -1) {
-                loaderBody.classList.add('d-none');
-            } else {
-                loaderBody.classList.remove('d-none');
-                loaderCounter.innerHTML = `${progressValue}%`
-                loaderProgressBar.style.width = `${progressValue}%`
-            }
-
-        }
-
-        this.start = () => {
-            inv = setInterval(this.task, 100);
-        };
-
-        this.stop = () => {
-            clearInterval(inv);
-        };
-    }
-}
-
-let progressValue = 0
-let progressBarEnable = false
 
 let showProgress = function (option, title = 'processing', cancellable = false) {
 
@@ -72,9 +27,11 @@ let showProgress = function (option, title = 'processing', cancellable = false) 
             loadingText.innerHTML = title
             progressModal.show()
         } else {
-            progressModal.hide()
-        }
+            setTimeout(()=>{
+                progressModal.hide()
+            },500)
 
+        }
         if (cancellable) {
             progressCancelBtn.classList.remove("display", "none")
             progressCancelBtn.classList.add("display", "inline")
