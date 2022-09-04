@@ -1,0 +1,211 @@
+.optionBtn img {
+    width: 24px;
+    filter: opacity(0.6);
+}
+
+.optionBtn:hover {
+    filter: brightness(120%);
+}
+
+.optionBtn.active {
+    filter: brightness(120%) hue-rotate(135deg);
+    box-shadow: inset 2px 2px 2px #0000004f, inset 2px 2px 5px #00000024;
+}
+
+.drawerBtn {
+    width: calc(100% - 0.2rem);
+    display: flex;
+    justify-content: center;
+    user-select: none;
+    background-color: rgba(0, 0, 0, 0.1);
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    font-weight: 400;
+    line-height: 1.5;
+    color: white;
+    margin: 0.1rem 0.1rem;
+    padding: 0.25rem 0.8rem;
+    font-size: .875rem;
+    border: none;
+    border-radius: 0.6rem;
+    box-shadow: 2px 2px 1px rgb(0 0 0 / 50%), inset 0px 0px 5px rgba(255, 255, 255, 0.5);
+}
+
+.drawerBtn input {
+    width: 100%;
+    cursor: pointer
+}
+
+.drawerBtn label {
+    color: white;
+}
+
+.drawerBtn:hover {
+    filter: brightness(150%);
+}
+
+.leftDrawer{
+    padding: 10px;
+    border-end-start-radius: 10px;
+    border-start-start-radius: 10px;
+    border-radius: 10px 0px 0px 10px;
+    box-shadow: 2px 2px 1px rgb(0 0 0 / 50%), inset 0px 0px 5px rgb(255 255 255 / 50%);
+}
+
+.titleBtn {
+    flex: 1 1 0;
+    user-select: none;
+    background-color: cadetblue;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1.5;
+    color: white;
+    margin: 0.2rem 0.2rem;
+    padding: 0.25rem 0.8rem;
+    font-size: .875rem;
+    border: none;
+    border-radius: 0.3rem;
+    box-shadow: 2px 2px 1px rgb(0 0 0 / 50%), inset 0px 0px 5px rgb(255 255 255 / 50%);
+    /*box-shadow: 2px 2px 1px rgb(0 0 0 / 50%), inset 0px 0px 5px rgba(255,255,255,0.5);*/
+}
+
+.titleBtn.active {
+    filter: brightness(120%) hue-rotate(135deg);
+    box-shadow: inset 2px 2px 2px #0000004f, inset 2px 2px 5px #00000024;
+}
+
+/*
+.titleBtn:hover {
+    flex:1 1 12%;
+    transition: flex 0.5s;
+}*/
+
+.titleBtn:not(.active):hover {
+    filter: brightness(120%);
+}
+
+.insetBox {
+    background-color: white;
+    box-shadow: inset 1px 1px 5px 1px rgb(0 0 0 / 50%);
+    border: none;
+
+}
+
+.optionBtn {
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    background-color: cadetblue;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    font-weight: 400;
+    line-height: 1.5;
+    color: white;
+    margin: 0.2rem 0.2rem;
+    padding: 0.25rem 0.8rem;
+    font-size: 8px;
+    border: none;
+    border-radius: 0.6rem;
+    /* box-shadow: 2px 2px 1px rgb(0 0 0 / 50%), inset 0px 0px 5px rgb(255 255 255 / 50%); */
+    box-shadow: 2px 2px 1px rgb(0 0 0 / 50%), inset 0px 0px 5px rgb(255 255 255 / 50%);
+    justify-content: space-between;
+    align-items: center;
+}
+
+.imgBtn {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    margin: 0.1rem 0.1rem;
+    padding: 0.25rem 0.8rem;
+    background-color: rgba(0, 0, 0, 0.1);
+    font-size: 1.2rem;
+    align-items: center;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    border: none;
+    border-radius: 0.2rem;
+    /*box-shadow: 2px 2px 1px rgb(0 0 0 / 50%), inset 0px 0px 5px rgba(255,255,255,0.5);*/
+}
+
+
+.imgBtn:hover:enabled {
+    /*flex:1 1 12%;
+    transition: flex 0.5s;*/
+    filter: brightness(120%);
+}
+
+.imgBtn:disabled {
+    background-color: rgba(0, 0, 0, 0.3)
+}
+
+.imgBtn label {
+    font-size: 8px;
+}
+
+.verticalDiv {
+    align-self: center;
+    height: 80%;
+    width: 2px;
+    margin: 10px;
+    background-color: darkgrey;
+    border-radius: 1px;
+}
+
+.progress-bar {
+    border-radius: 20px;
+}
+
+.progress {
+    border-radius: 20px;
+}
+
+.modal-content {
+    background-color: #d4d9de;
+}
+
+.selectorList{
+    padding: 0.5rem;    
+}
+
+.selectorList .row{
+    align-items: center;
+    border: 1px solid #adb0b4;
+    border-radius: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    height: 60px;
+
+}
+
+.animationBar {
+    overflow: hidden;
+    animation-duration: 1.5s;
+    animation-name: loop;
+    animation-iteration-count: infinite;
+}
+
+@keyframes loop {
+    0% {
+        width: 0%;
+        transform: translateX(0%);
+    }
+
+    50% {
+        width: 100%;
+        transform: translateX(0%);
+    }
+
+    100% {
+        width: 100%;
+        transform: translateX(100%);
+    }
+}

@@ -1,0 +1,88 @@
+newmtl m0
+map_Kd eye.png
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+Ns 0
+d 1
+
+newmtl m1
+map_Kd bottoms.png
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+Ns 0
+d 1
+
+newmtl m2
+map_Kd hair1.png
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+Ns 0
+d 1
+
+newmtl m3
+map_Kd bottoms.png
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+Ns 0
+d 1
+
+newmtl m4
+map_Kd tops.png
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+Ns 0
+d 1
+
+newmtl m5
+map_Kd hair2.png
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+Ns 0
+d 1
+
+newmtl m6
+map_Kd face.png
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+Ns 0
+d 1
+
+newmtl m7
+map_Kd face.png
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+Ns 0
+d 1
+
+newmtl m8
+map_Kd face.png
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+Ns 0
+d 1
+
+newmtl m9
+map_Kd face.png
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+Ns 0
+d 1
+
+newmtl m10
+map_Kd eye2.png
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 0 0 0
+Ns 0
+d 1
+

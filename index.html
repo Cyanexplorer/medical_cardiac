@@ -1,8 +1,877 @@
 <!DOCTYPE html>
 <html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Cardiac Image Loader</title>
+    <!-- Bootstrap CSS -->
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            padding: 0px;
+            margin: 0px;
+            color: #353535;
+            font-family: monospace;
+            background: slategray;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .centerPanel {
+            width: 50vw;
+            min-width: 700px;
+            display: flex;
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.7);
+            box-shadow: 2px 2px 5px rgb(0 0 0 / 50%);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .leftPanel {
+            display: flex;
+            flex-direction: column;
+            margin: 10px;
+        }
+
+        .leftPanel div {
+            height: 100%;
+        }
+
+        .rightPanel {
+            display: flex;
+            flex-direction: column;
+            margin: 10px;
+        }
+
+        .rightPanel div {
+            height: 100%;
+        }
+
+        .ctViewer {
+            background-color: black;
+            backdrop-filter: blur(10px);
+        }
+
+        .hSlider {
+            orient: vertical;
+            -webkit-appearance: slider-vertical;
+        }
+
+        .staticMenu {
+            width: 100%;
+            height: 90%;
+            resize: none;
+        }
+    </style>
+</head>
+
 <body>
-    <script type="text/javascript">
-            window.location.href = "https://20.84.80.58:3000"
+    <!-- Modal -->
+    <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="loadingText" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="loadingText"></h6>
+                    <button type="button" id="progressCancelBtn" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close" style="display:none"></button>
+                </div>
+                <div id="loaderBody" class="modal-body">
+                    <p id="loadingCounter"></p>
+                    <div class="progress">
+                        <div id="loadingProgressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
+                            aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="FormModal" tabindex="-1" aria-labelledby="FormLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="FormLabel"></h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form name="imgForm">
+                        <label for="width-input">Width:</label>
+                        <input id="width-input" type="text" class="form-control">
+                        <label for="height-input">Height:</label>
+                        <input id="height-input" type="text" class="form-control">
+                        <label for="layer-input">Layer:</label>
+                        <input id="layer-input" type="text" class="form-control">
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Process</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class=" centerPanel">
+        <div class="leftPanel container">
+            <div class="row">
+                <canvas id="ctViewer" class="col-11 ctViewer"></canvas>
+                <input id="imgSlider" type="range" class="col-1 hSlider" disabled>
+            </div>
+
+            <hr />
+            <div class="row">
+                <h5>Upload File(s)</h5>
+                <button id="importDicomBtn" class="col-12 drawerBtn">DICOM</button>
+                <button id="importRawBtn" class="col-12 drawerBtn">RAW</button>
+                <button id="importNRRDBtn" class="col-12 drawerBtn">NRRD</button>
+            </div>
+            <hr />
+            <div class="row">
+                <h5>Operations</h5>
+                <button id="newInstanceBtn" class="col-6 drawerBtn">Create new Instance</button>
+                <button id="img2rawBtn" class="col-6 drawerBtn">Convert to RAW</button>
+            </div>
+        </div>
+
+        <div class="verticalDiv">
+        </div>
+        <div class="rightPanel container">
+            <form name="imgInfo" class="row align-items-baseline">
+                <h5>MetaData</h5>
+                <label class="col-6">Date</label>
+                <input readonly name="date" class="col-6 insetBox">
+                <label class="col-6">Patient</label>
+                <input readonly name="patient" class="col-6 insetBox">
+                <label class="col-6">Data Type</label>
+                <input readonly name="bit" class="col-6 insetBox">
+                <label class="col-6">Image Size</label>
+                <input readonly name="imgSize" class="col-6 insetBox">
+                <label class="col-6">Spacing</label>
+                <input readonly name="spacing" class="col-6 insetBox">
+                <label class="col-6">Orientation</label>
+                <input readonly name="orientation" class="col-6 insetBox">
+                <label class="col-6">Position</label>
+                <input readonly name="position" class="col-6 insetBox">
+            </form>
+            <hr />
+            <div class="row">
+                <h5>Menu</h5>
+                <textarea class="staticMenu insetBox" readonly>
+功能說明:
+(1)Upload Files:上傳文件，目前支援格式為DICOM和RAW
+(2)Create a new instance:開啟新的編輯頁面
+(3)Convert to RAW:將上傳的影像轉換成RAW格式  
+(4)MetaData:輸入影像的內部參數    
+
+(註)同一批DICOM文件在上傳時可複選，但系統不支援不同批次的CT同時上傳
+
+操作方式:
+由(1)上傳檔案，再開啟(2)對影像進行操作
+                </textarea>
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript" src="coi-serviceworker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" src="js/daikon-min.js"></script>
+    <script type="text/javascript" src="js/utilities.js"></script>
+    <script type="module">
+        import { ImageProcess } from "./jsm/controller/ImageProcessTools.js"
+        import * as THREE from "./jsm/build/three.module.js"
+        import { STLExporter } from "./jsm/example/jsm/exporters/STLExporter.js";
+        import { PLYExporter } from "./jsm/example/jsm/exporters/PLYExporter.js";
+
+        let progressValue = 0
+        let progressBarEnable = false
+
+        let fileRegex = /(\w+)_(\d+)[x,_](\d+)[x,_](\d+)_uint(\d+)\.*/;
+
+        let showProgress = function (option, title = 'processing', cancellable = false) {
+
+            let loadingText = document.getElementById('loadingText');
+            let progressCancelBtn = document.getElementById('progressCancelBtn');
+            let progressModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('progressModal'))
+
+            requestAnimationFrame(() => {
+
+
+                if (option) {
+                    loadingText.innerHTML = title
+                    progressModal.show()
+                } else {
+                    progressModal.hide()
+                }
+
+                if (cancellable) {
+                    progressCancelBtn.classList.remove("display", "none")
+                    progressCancelBtn.classList.add("display", "inline")
+                } else {
+                    progressCancelBtn.classList.remove("display", "inline")
+                    progressCancelBtn.classList.add("display", "none")
+                }
+
+            })
+        }
+
+        let setProgress = function (value) {
+            let loaderBody = document.getElementById('loaderBody')
+            let loaderCounter = document.getElementById('loadingCounter')
+            let loaderProgressBar = document.getElementById('loadingProgressBar')
+
+            if (value == -1) {
+                loaderBody.classList.add('d-none');
+            } else {
+                loaderBody.classList.remove('d-none');
+            }
+
+            value = Math.round(value * 1000) / 10
+            setTimeout(() => {
+                loaderCounter.innerHTML = `${value}%`
+                loaderProgressBar.style.width = `${value}%`
+            }, 10)
+
+        }
+
+        class ProgressUpdator{
+            constructor(){
+
+            }
+        }
+
+        class FileDownloader {
+            constructor() {
+                this.modelType = ['STL', 'PLY']
+                this.segmentType = ['JPG', 'PNG']
+
+                let downloadLink = document.createElement('a')
+                let stlExporter = new STLExporter()
+                let plyExporter = new PLYExporter()
+
+                let cav = document.createElement('canvas')
+                let context = cav.getContext('2d')
+
+                let saveArrayBuffer = function (buffer, filename) {
+                    let blob = new Blob([buffer], { type: 'application/octet-stream' })
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.download = filename;
+                    downloadLink.click();
+                }
+
+                let saveBlobBuffer = function (blob, filename) {
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.download = filename;
+                    downloadLink.click();
+                }
+
+                let saveCanvasImg = function (url, filename) {
+
+                    downloadLink.href = url
+                    downloadLink.download = filename;
+                    downloadLink.click();
+                }
+
+                this.segmentsProcess = function (mode, filename, buffer, width, height) {
+
+                    if (buffer == null) {
+                        return
+                    }
+
+                    let format = ''
+                    let zip = new JSZip()
+                    let mine = ''
+
+                    let downloadZip = (filename, format, mine, buffer) => {
+                        let blobs = []
+                        let imgData = context.getImageData(0, 0, width, height)
+
+                        let onload = () => {
+                            for (let j = 0; j < blobs.length; j++) {
+                                let name = filename + '_layer' + j + format
+                                zip.file(name, blobs[j])
+                            }
+
+                            zip.generateAsync({
+                                type: "blob",
+                                compression: "DEFLATE",
+                                compressionOptions: {
+                                    level: 9
+                                }
+                            })
+                                .then(function (content) {
+                                    saveBlobBuffer(content, filename)
+                                });
+                        }
+
+                        cav.width = width
+                        cav.height = height
+
+                        if (buffer.length == 1) {
+                            imgData.data.set(buffer[0])
+                            context.putImageData(imgData, 0, 0)
+
+                            cav.toBlob((blob) => {
+                                saveArrayBuffer(blob, filename + format)
+                            }, mine)
+
+                            return
+                        }
+
+                        for (let i = 0; i < buffer.length; i++) {
+                            imgData.data.set(buffer[i])
+                            context.putImageData(imgData, 0, 0)
+
+                            cav.toBlob((blob) => {
+                                blobs.push(blob)
+                                console.log('zip:' + blobs.length)
+                                if (blobs.length == buffer.length) {
+                                    onload()
+                                }
+                            }, mine)
+                        }
+                    }
+
+                    switch (mode) {
+                        case this.segmentType[0]:
+                            format = '.raw'
+                            filename += format
+                            saveArrayBuffer(buffer, filename)
+                            break
+                        case this.segmentType[1]:
+                            format = '.jpg'
+                            mine = "image/jpg"
+                            downloadZip(filename, format, mine, buffer)
+                            break
+                        case this.segmentType[2]:
+                            format = '.png'
+                            mine = "image/png"
+                            downloadZip(filename, format, mine, buffer)
+                            break
+                        default:
+                            alert('Format not support!')
+                            return
+                            break
+                    }
+                }
+
+                this.rawProcess = function (filename, data, byte) {
+                    let result, colorRange
+                    let format = '.raw'
+
+                    if (data == null)
+                        return
+
+                    //由Float轉換回原資料的格式
+                    switch (byte) {
+                        case 8:
+                            result = new Uint8Array(data.length)
+                            colorRange = 255
+                            break
+                        case 16:
+                            result = new Uint16Array(data.length)
+                            colorRange = 65535
+                            break
+                        default:
+                            result = new Uint8Array(data.length)
+                            colorRange = 255
+                    }
+
+                    //console.log(data)
+                    for (let i = 0; i < data.length; i++) {
+                        result[i] = data[i] * colorRange
+                    }
+
+                    saveArrayBuffer(result, filename + format);
+                }
+
+                this.modelProcess = function (mode, filename, data) {
+                    if (data == null) {
+                        alert('No model data!')
+                        return
+                    }
+
+                    let result = null
+                    let format = ''
+                    switch (mode) {
+                        case this.modelType[0]:
+                            result = stlExporter.parse(data, { binary: true });
+                            format = '.stl';
+                            break
+                        case this.modelType[1]:
+                            result = plyExporter.parse(data, { binary: true });
+                            format = '.ply';
+                            break
+                        default:
+                            alert('Format not support!')
+                            return
+                            break
+                    }
+
+                    if (result != null) {
+                        saveArrayBuffer(result, filename + format);
+                    }
+                }
+            }
+        }
+
+        class ImageDataUploader {
+            constructor() {
+                this.type = {
+                    DCM: 0,
+                    NRRD: 1,
+                    RAW: 2
+                }
+
+                //let algorithm = new Kernel().sharpness
+
+ let bitConvertor = (buffer, bitsAllocated, bitsStored, endian = 'little') => {
+                    let data = null
+
+                    if (bitsAllocated == 16) {
+                        data = new Uint16Array(buffer)
+                    } else if (bitsAllocated == 8) {
+                        let dv = new DataView(buffer)
+                        data = new Uint16Array(buffer.byteLength)
+
+                        for (let i = 0; i < data.length; i++) {
+                            data[i] = dv.getUint8(i)
+                        }
+
+                    } else {
+                        console.log('Format not support.')
+                        return
+                    }
+
+                    //big endian / little endian 檢測
+                    if (endian == 'big' && bitsAllocated == 16) {
+                        for (let i = 0; i < data.length; i++) {
+                            let x = data[i]
+                            data[i] = (x << 8) | (x >> 8)
+                        }
+                    }
+
+                    return data
+                }
+
+
+                let getDcmInfo = (image) => {
+                    let acquiredSliceDirection = image.getAcquiredSliceDirection()
+                    let acquisitionMatrix = image.getAcquisitionMatrix()
+                    let sliceThickness = image.getSliceThickness()
+                }
+                
+                let imagePositionComparation = (a, b) => {
+                    if(a.getSliceLocation() > b.getSliceLocation())
+                      return 1
+                    else if(a.getSliceLocation() < b.getSliceLocation())
+                      return -1
+                    else
+                      return 0
+                }
+
+                let loadDCMFile = (files, onload) => {
+                    let info = ''
+                    let series = new daikon.Series()
+                    daikon.Series.useExplicitOrdering = true;
+
+                    if (files.length == 0) {
+                        return
+                    }
+
+                    let process = (index) => {
+                        setProgress(index / files.length)
+                        let fr = new FileReader();
+
+                        fr.onload = function () {
+                            var image = daikon.Series.parseImage(new DataView(fr.result));
+                            //console.log(image.getImageNumber())
+
+                            if (image === null || !image.hasPixelData()) {
+                                console.error(daikon.Series.parserError)
+                            } else if (series.images.length === 0 || image.getSeriesId() === series.images[0].getSeriesId()) {
+                                series.addImage(image)
+                            }
+
+                            if (series.images.length === files.length) {
+                                index++
+                                setProgress(index / files.length)
+                                series.buildSeries()
+
+                                let images = series.images
+                                images.sort(imagePositionComparation)
+
+                                let bitsAllocated = images[0].getBitsAllocated()
+                                let bitsStored = images[0].getBitsStored()
+
+                                let thickness = images.length > 1 ? Math.abs(images[1].getImagePosition()[2] - images[0].getImagePosition()[2]) : images[0].getSliceThickness()
+
+                                let spacing = images[0].getPixelSpacing()
+                                let position = [0, 0, 0]
+
+                                //alert(images[0].toString())
+                                let d = images[0].getImageDirections()
+                                
+                                if(d == null || !(d instanceof Array) || d.length != 6){
+                                  d = [1, 0, 0, 0, 1, 0]
+                                }
+                                
+                                
+                                let matrix = new THREE.Matrix4()
+
+                                let v0 = new THREE.Vector3()
+                                let v1 = new THREE.Vector3()
+                                let v2 = new THREE.Vector3()
+                                let result = new THREE.Vector3()
+                                let volDims = new THREE.Vector3()
+                                let newVolDims = new THREE.Vector3(3)
+
+                                let offset = new THREE.Vector3()
+                                offset.set(2, 2, 2)
+                                v0.set(d[0], d[1], d[2])
+                                v1.set(d[3], d[4], d[5])
+
+                                v2.add(v0)
+                                v2.add(v1)
+                                v2.addScalar(1)
+                                v2.set(v2.x % 2, v2.y % 2, v2.z % 2)
+
+                                //console.log(v0, v1, v2)
+
+                                matrix = new THREE.Matrix3()
+                                matrix.set(v0.x, v1.x, v2.x, v0.y, v1.y, v2.y, v0.z, v1.z, v2.z)
+
+                                volDims.set(images[0].getCols(), images[0].getRows(), images.length)
+                                newVolDims = volDims.clone()
+                                newVolDims.applyMatrix3(matrix)
+                                newVolDims.set(Math.abs(newVolDims.x), Math.abs(newVolDims.y), Math.abs(newVolDims.z))
+
+                                series.concatenateImageData(null, (buffer) => {
+
+
+                                    let data = bitConvertor(buffer, bitsAllocated, bitsStored)
+                                    //let cvtData1 = bitConvertor(newData, bit, newVolDims.toArray(), 4)
+
+                                    let newData = data.slice()
+                                    let pos = new THREE.Vector3()
+
+                                    let istep, jstep
+                                    for (let i = 0; i < volDims.z; i++) {
+                                        istep = i * volDims.x * volDims.y
+                                        for (let j = 0; j < volDims.y; j++) {
+                                            jstep = j * volDims.x
+                                            for (let k = 0; k < volDims.x; k++) {
+                                                pos.set(k, j, i)
+                                                pos.applyMatrix3(matrix)
+                                                pos.set(Math.abs(pos.x),
+                                                    Math.abs(pos.y),
+                                                    Math.abs(pos.z))
+                                                newData[pos.z * newVolDims.x * newVolDims.y + pos.y * newVolDims.x + pos.x]
+                                                    = data[istep + jstep + k]
+                                            }
+                                        }
+                                    }
+
+                                    data = newData
+                                    newData = null
+
+                                    //console.log(thickness)
+                                    pos.set(spacing[0], spacing[1], thickness)
+                                    pos.applyMatrix3(matrix)
+                                    pos.set(Math.abs(pos.x),
+                                        Math.abs(pos.y),
+                                        Math.abs(pos.z))
+
+                                    let imgInfo = {}
+                                    let date = images[0].getStudyDate()
+
+                                    imgInfo.date = date.getFullYear() + '/' + (date.getMonth() * 1 + 1) + '/' + date.getDate()
+                                    imgInfo.dims = [newVolDims.x, newVolDims.y, newVolDims.z]
+                                    imgInfo.bitsStored = bitsStored
+                                    imgInfo.bitsAllocated = bitsAllocated
+                                    imgInfo.spacing = [pos.x, pos.y, pos.z]
+                                    imgInfo.position = position
+
+                                    onload(imgInfo, data)
+                                    showProgress(false)
+                                })
+                            } else {
+                                index++
+                                process(index)
+                            }
+                        }
+
+                        fr.readAsArrayBuffer(files[index]);
+                    }
+
+                    showProgress(true, "load images", false)
+                    setTimeout(() => {
+                        process(0)
+                    }, 1000)
+                }
+
+                let loadNRRDFile = (file, onload) => {
+                    const loader = new NRRDLoader();
+                    loader.load(file, function (volume) {
+
+                        let imgInfo = {}
+                        imgInfo.date = 'Not support'
+                        imgInfo.dims = [volume.xLength, volume.yLength, volume.zLength]
+                        imgInfo.bitsAllocated = volume.data.byte
+                        imgInfo.bitsStored = volume.data.byte
+                        imgInfo.spacing = [1, 1, 1]
+                        imgInfo.position = [0, 0, 0]
+
+                        onload(imgInfo, [volume.data.buffer, volume.data.buffer])
+                    })
+                }
+
+                let loadRAWFile = (file, onload) => {
+                    let fr = new FileReader();
+                    let filename = file.name
+
+                    let m = filename.match(fileRegex);
+
+                    let volDims, bit
+                    if (m.length == 6) {
+                        volDims = [parseInt(m[2]), parseInt(m[3]), parseInt(m[4])];
+                        bit = m[5]
+                    } else if (m.length == 5) {
+                        volDims = [parseInt(m[1]), parseInt(m[2]), parseInt(m[3])];
+                        bit = m[4]
+                    }
+
+                    fr.onload = function () {
+
+
+                        let cvtArray0 = bitConvertor(fr.result, bit, bit, 'big')
+
+                        let imgInfo = {}
+                        imgInfo.date = 'Unsupported'
+                        imgInfo.patient = 'Unsupported'
+                        imgInfo.orienation = 'Unsupported'
+                        imgInfo.dims = volDims
+                        imgInfo.bitsAllocated = bit
+                        imgInfo.bitsStored = bit
+                        imgInfo.spacing = [1, 1, 1]
+                        imgInfo.position = [0, 0, 0]
+
+                        onload(imgInfo, cvtArray0)
+                    }
+                    fr.readAsArrayBuffer(file);
+                }
+
+                this.process = (files, type, onload) => {
+                    switch (type) {
+                        case this.type.DCM:
+                            loadDCMFile(files, onload)
+                            break
+                        case this.type.NRRD:
+                            loadNRRDFile(files[0], onload)
+                            break
+                        case this.type.RAW:
+                            loadRAWFile(files[0], onload)
+                            break
+                        default:
+                            alert('Upload file not support!')
+                            break
+                    }
+                }
+
+
+            }
+        }
+
+        let sliderIndex = -1
+        let imgData = null
+        let imgInfo = null
+
+        let event = new Event('resize')
+        let inputEvt = new Event('input')
+
+        window.onload = () => {
+            let centrePanel = document.querySelector('.centerPanel')
+            let viewer = document.querySelector('.ctViewer')
+            let divider = document.querySelector('.verticalDiv')
+
+            window.addEventListener('resize', () => {
+                let w = window.getComputedStyle(viewer).width
+                viewer.style.height = w
+
+                let h = window.getComputedStyle(centrePanel).height
+                divider.style.height = `calc(${h} * 0.9)`
+
+            })
+            window.dispatchEvent(event)
+
+            // 文件上傳節點
+            let dcmMultiUploadInput = document.getElementById('importDicomBtn')
+            let rawUploadInput = document.getElementById('importRawBtn')
+            let nrrdUploadInput = document.getElementById('importNRRDBtn')
+
+            // 執行節點
+            let newInstanceBtn = document.getElementById('newInstanceBtn')
+            let img2rawBtn = document.getElementById('img2rawBtn')
+
+            let slider = document.getElementById('imgSlider')
+
+            // 畫布資訊
+            let ctx = viewer.getContext('2d')
+            let plt = null
+            let size2 = 0
+
+            let imgInfomation = document.forms['imgInfo'].elements
+
+            let uploader = new ImageDataUploader()
+
+            let drawImage = (index) => {
+                let dims = imgInfo.dims
+                let stored = imgInfo.bitsStored
+                let scalar = 2 ** (8 - stored)
+                let sIndex = size2 * index
+                plt.data.fill(255)
+
+                for (let i = 0; i < size2; i++) {
+                    plt.data[i * 4 + 3] = (imgData[sIndex + i] + 1) * scalar - 1
+                }
+                //console.log(plt, imgData)
+                ctx.putImageData(plt, 0, 0)
+            }
+
+            slider.addEventListener('input', () => {
+                drawImage(slider.value)
+            })
+
+            let loadFile = (evt, type) => {
+                let files = evt.target.files
+
+                if (files == null) {
+                    return
+                }
+
+                uploader.process(files, type, (info, data) => {
+
+                    //console.log(info, data)
+                    imgData = data
+                    imgInfo = info
+                    viewer.width = info.dims[0]
+                    viewer.height = info.dims[1]
+                    size2 = info.dims[0] * info.dims[1]
+                    plt = ctx.getImageData(0, 0, info.dims[0], info.dims[1])
+                    slider.disabled = false
+                    slider.min = 0;
+                    slider.max = info.dims[2] - 1
+                    slider.step = 1
+
+                    imgInfomation.date.value = info.date
+                    imgInfomation.imgSize.value = `${info.dims[0]}:${info.dims[1]}:${info.dims[2]}`
+                    imgInfomation.spacing.value = `${Math.round(info.spacing[0] * 100) / 100}:${Math.round(info.spacing[1] * 100) / 100}:${Math.round(info.spacing[2] * 100) / 100}`
+                    imgInfomation.bit.value = info.bitsStored
+                    imgInfomation.position.value = info.position
+
+                    slider.value = Math.round(info.dims[2] / 2)
+                    slider.dispatchEvent(inputEvt)
+                })
+            }
+
+            let filesloader = document.createElement('input')
+            filesloader.type = 'file'
+            filesloader.addEventListener('change', (evt) => {
+                switch (filesloader.accept) {
+                    case '.dcm':
+                        loadFile(evt, uploader.type.DCM)
+                        break
+                    case '.raw':
+                        loadFile(evt, uploader.type.RAW)
+                        break
+                    case '.nrrd':
+                        loadFile(evt, uploader.type.NRRD)
+                        break
+                }
+
+            })
+
+            // Multi DCM DATA
+            dcmMultiUploadInput.addEventListener('click', (evt) => {
+                filesloader.accept = '.dcm'
+                filesloader.multiple = "multiple"
+                filesloader.click()
+            })
+
+            // NRRD DATA
+            nrrdUploadInput.addEventListener('click', (evt) => {
+                filesloader.accept = '.nrrd'
+                filesloader.webkitdirectory = false
+                filesloader.mozdirectory = false
+                filesloader.click()
+            })
+
+            // RAW DATA
+            rawUploadInput.addEventListener('click', (evt) => {
+                filesloader.accept = '.raw'
+                filesloader.webkitdirectory = false
+                filesloader.mozdirectory = false
+                filesloader.click()
+            })
+
+            let tab = null
+            let url = null
+            let link =
+                newInstanceBtn.addEventListener('click', (evt) => {
+                    if (imgData == null || imgInfo == null)
+                        return
+
+                    if (tab != null) {
+                        tab.close()
+                    }
+
+                    if (url != null) {
+                        URL.revokeObjectURL(url)
+                    }
+
+                    let blob = new Blob([imgData.buffer], { type: 'application/octet-stream' })
+                    url = URL.createObjectURL(blob)
+
+                    //console.log(blob)
+                    let strInfo = JSON.stringify(imgInfo)
+
+                    tab = window.open('editor.html', 'slicer')
+
+                    tab.localStorage.setItem('blob', url)
+                    tab.localStorage.setItem('info', strInfo)
+                    tab.focus()
+                })
+
+            let fileDownloader = new FileDownloader()
+
+            img2rawBtn.addEventListener('click', () => {
+                if(imgData == null || imgInfo == null){
+                    return
+                }
+
+                let width = imgInfo.dims[0]
+                let height = imgInfo.dims[1]
+                let depth = imgInfo.dims[2]
+                let bits = imgInfo.bitsAllocated
+                fileDownloader.rawProcess('model_'+width+'_'+height+'_'+depth,imgData, bits)
+            })
+
+
+        }
     </script>
 </body>
 

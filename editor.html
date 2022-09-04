@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
+    <!--fontawesome icon pkg-->
+    <script src="https://kit.fontawesome.com/a14a7c1ba7.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/dualSlider.css">
+    <link rel="stylesheet" type="text/css" href="css/dcmViewer.css">
+    <link rel="stylesheet" type="text/css" href="css/viewController.css">
+    <title>CT Image Slicer</title>
+</head>
+
+<body class="vw-100 vh-100">
+
+    <!-- Modal -->
+    <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="loadingText" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="loadingText"></h6>
+                    <button type="button" id="progressCancelBtn" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close" style="display:none"></button>
+                </div>
+                <div id="loaderBody" class="modal-body">
+                    <p id="loadingCounter"></p>
+                    <div class="progress">
+                        <div id="loadingProgressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
+                            aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="FormModal" tabindex="-1" aria-labelledby="FormLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="FormLabel"></h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form name="imgForm">
+                        <label for="width-input">Width:</label>
+                        <input id="width-input" type="text" class="form-control">
+                        <label for="height-input">Height:</label>
+                        <input id="height-input" type="text" class="form-control">
+                        <label for="layer-input">Layer:</label>
+                        <input id="layer-input" type="text" class="form-control">
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Process</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View -->
+    <div class="w-100 h-100 d-flex flex-column">
+        <div id="workingScene" class="workingScene">
+            <div class="left-scene">
+                <div id="ct-view" class="scene">
+                    <div class="viewer-group row g-0">
+                        <div class="group-container">
+                            <div class="small-container">
+                                <div id="horizontalView" class="lefttopView dcmViewer viewer-layout" data-toggle=false
+                                    data-layout-type="image">
+                                    <div class="viewer-body">
+                                        <div class="viewport port-shadow">
+                                        </div>
+                                        <div class="imgLayerSlider lftSlider">
+                                            <i class="go goTop"></i>
+                                            <input class="viewer-slider" type="range" id="horizontalRange" />
+                                            <i class="go goBottom"></i>
+                                        </div>
+                                        <div data-toggle="on" class="imgLayerInfo">
+                                            <img src="img/png/f-16/plane_h.png">
+                                            <div>
+                                                Layer:<label class="counter">0/0</label><br />
+                                                Exposure:<label class="exposure">0</label><br />
+                                                Contrast:<label class="contrast">0</label><br />
+                                            </div>
+                                        </div>
+                                        <p class="imgLayerTitle">Horizontal</p>
+                                    </div>
+                                    <div class="viewer-bar">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="small-container">
+                                <div id="volumeView" class="centertopView viewer-layout" data-toggle=false
+                                    data-layout-type="volume">
+                                    <div class="viewer-body">
+                                        <div class="viewport port-alpha port-full"></div>
+                                        <div data-toggle="on" class="imgLayerInfo">
+                                            <div class="axis-plane3D"></div>
+                                        </div>
+                                        <p class="imgLayerTitle">Volume</p>
+                                    </div>
+                                    <div class="viewer-bar"></div>
+                                </div>
+                            </div>
+
+                            <div class="small-container">
+                                <div id="coronalView" class="leftbottomView dcmViewer viewer-layout" data-toggle=false
+                                    data-layout-type="image">
+                                    <div class="viewer-body">
+                                        <div class="viewport port-shadow">
+                                        </div>
+                                        <div class="imgLayerSlider btmSlider">
+                                            <i class="go goTop"></i>
+                                            <input class="viewer-slider" type="range" id="coronalRange" />
+                                            <i class="go goBottom"></i>
+                                        </div>
+                                        <div data-toggle="on" class="imgLayerInfo">
+                                            <img src="img/png/f-16/plane_c.png">
+                                            <div>
+                                                Layer:<label class="counter">0/0</label><br />
+                                                Exposure:<label class="exposure">0</label><br />
+                                                Contrast:<label class="contrast">0</label><br />
+                                            </div>
+                                        </div>
+
+                                        <p class="imgLayerTitle">Coronal</p>
+                                    </div>
+                                    <div class="viewer-bar">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="small-container">
+                                <div id="sagittalView" class="centerbottomView dcmViewer viewer-layout"
+                                    data-toggle=false data-layout-type="image">
+                                    <div class="viewer-body">
+                                        <div class="viewport port-shadow">
+                                        </div>
+                                        <div class="imgLayerSlider btmSlider dr2l">
+                                            <i class="go goTop"></i>
+                                            <input class="viewer-slider" type="range" id="sagittalRange" />
+                                            <i class="go goBottom"></i>
+                                        </div>
+                                        <div data-toggle="on" class="imgLayerInfo">
+                                            <img src="img/png/f-16/plane_s.png">
+                                            <div>
+                                                Layer:<label class="counter">0/0</label><br />
+                                                Exposure:<label class="exposure">0</label><br />
+                                                Contrast:<label class="contrast">0</label><br />
+                                            </div>
+                                        </div>
+                                        <p class="imgLayerTitle">Saggital</p>
+                                    </div>
+                                    <div class="viewer-bar">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="medium-container">
+                            <div id="idolView" class="viewer-layout medium-group" data-toggle=false
+                                data-layout-type="idol">
+                                <div class="viewer-body">
+                                    <div class="viewport port-alpha port-full"></div>
+                                    <div data-toggle="on" class="imgLayerInfo">
+                                        <div class="axis-plane3D"></div>
+                                    </div>
+                                    <p class="imgLayerTitle">Body</p>
+                                </div>
+                                <div class="viewer-bar"></div>
+                            </div>
+                        </div>
+
+                        <!--
+    
+                           
+    
+                            <div>
+                                <div id="cadView" class=" viewer-layout" data-toggle=false data-layout-type="cad">
+                                    <div class="viewer-body">
+                                        <div class="viewport"></div>
+                                        <div data-toggle="on" class="imgLayerInfo"></div>
+                                        <p class="imgLayerTitle">Axis</p>
+                                    </div>
+                                    <div class="viewer-bar"></div>
+                                </div>
+                            </div>
+                            -->
+                    </div>
+
+                </div>
+                <div class="scene">
+                    <div class="viewer-group row g-0">
+                        <div id="dcmViewer">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="controlPanelAdjBar" class="adjBar"></div>
+            <div class="right-scene">
+                <div id="controlPanel" class="controlPanel">
+
+
+                    <div class="controlPanelContent">
+                        <div class="cardLayout">
+
+                            <div id="page_selector" class="d-flex">
+
+                                <button id="mask_page_btn" class="titleBtn" data-page-name="IMAGE"
+                                    data-page-index="0">Image</button>
+                                <button id="segment_page_btn" class="titleBtn" data-page-name="SEGMENT"
+                                    data-page-index="0">Segment</button>
+                                <button id="tools_page_btn" class="titleBtn" data-page-name="MODEL"
+                                    data-page-index="1">Model</button>
+                                <!--<button id="display_page_btn" class="col-4 btn btn-outline-dark btn-sm" data-page-index="1">Display</button>-->
+                                <!--<button id="download_page_btn" class="col-4 btn btn-outline-dark btn-sm">Download</button>-->
+                            </div>
+
+
+                            <form name="segmentsForm" class="mt-2 d-flex flex-column">
+                                <div id="segment_list_n" class="insetBox" style="height:150px">
+                                </div>
+                            </form>
+
+                            <div class="d-flex segment-control-panel">
+                                <Button id="add_segment_btn" class="imgBtn">
+                                    <i class="fa-solid fa-square-plus"></i>
+                                    <label>add</label>
+                                </Button>
+                                <Button id="remove_segment_btn" class="imgBtn">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                    <label>remove</label>
+                                </Button>
+                                <Button id="previous_step_btn" disabled class="imgBtn">
+                                    <i class="fa-solid fa-arrow-left"></i>
+                                    <label>undo</label>
+                                </Button>
+                                <Button id="next_step_btn" disabled class="imgBtn">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <label>redo</label>
+                                </Button>
+                                <Button id="import_segment_btn" class="imgBtn">
+                                    <i class="fa-solid fa-file-import"></i>
+                                    <label>import</label>
+                                </Button>
+                                <Button id="export_segment_btn" class="imgBtn">
+                                    <i class="fa-solid fa-file-export"></i>
+                                    <label>export</label>
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div class="cardLayout flex-grow-1 flex-shrink-1">
+                            <div id="page_group" class="container pt-2 page-group">
+
+                                <div id="clipping_page" class="d-flex flex-column page">
+
+
+                                    <div class="accordion">
+                                        <button class="groupBtn" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#histogram" aria-expanded="true"
+                                            aria-controls="render-mode">
+                                            Histogram
+                                        </button>
+                                        <div id="histogram" class="accordion-collapse collapse show"
+                                            aria-labelledby="histogram">
+                                            <div class="accordion-body container">
+                                                <div class="d-flex" id="image_histogram_viewer"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="accordion">
+                                        <button class="groupBtn" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#preprocess" aria-expanded="true"
+                                            aria-controls="render-mode">
+                                            PreProcess
+                                        </button>
+                                        <div id="preprocess" class="accordion-collapse collapse show"
+                                            aria-labelledby="preprocess">
+                                            <div class="accordion-body container">
+                                                <div class="row">
+                                                    <div class="col-4">Image Style</div>
+                                                    <select id="imgSelector" class="col-6 container insetBox">
+                                                    </select>
+                                                    <div id="imgInvertorCheckBox"
+                                                        class="col-2 d-flex flex-column align-items-center">
+                                                        <input type="checkbox">
+                                                        <div style="font-size: 2px">Invert</div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion">
+                                        <button class="groupBtn" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#createMask" aria-expanded="true"
+                                            aria-controls="render-mode">
+                                            Crop
+                                        </button>
+                                        <div id="createMask" class="accordion-collapse collapse show"
+                                            aria-labelledby="createMask">
+                                            <div class="accordion-body container">
+                                                <div id="cropTools_selector" class="d-flex flex-wrap">
+                                                    <button class="grid-3 optionBtn" data-mode="SPHERE">
+                                                        <img src="img/svg/sphere.svg">
+                                                        Sphere
+                                                    </button>
+                                                    <button class="grid-3 optionBtn" data-mode="BOX">
+                                                        <img src="img/svg/box.svg">
+                                                        Box
+                                                    </button>
+                                                    <button class="grid-3 optionBtn" data-mode="CYLINDER">
+                                                        <img src="img/svg/cylinder.svg">Cylinder</button>
+                                                    <button class="grid-3 optionBtn d-none" data-mode="ACM">ACM</button>
+                                                    <button class="grid-3 optionBtn d-none"
+                                                        data-mode="Segment">Customize</button>
+                                                    <button class="grid-3 optionBtn d-none" data-mode="BALLOON">
+                                                        <img src="img/svg/balloon.svg">
+                                                        Balloon</button>
+                                                </div>
+                                                <div id="cropTools_group" style="position: relative;height: 120px;">
+                                                    <div class="tool container" id="sphererow">
+                                                        <div class="row g-0 text-center">
+                                                            <label class="col-3" for="input-maskvalue">radius</label>
+                                                            <input id="sphere_slider_radius" type="range" class="col-9">
+                                                            <label class="col-3" for="input-maskvalue">center-x</label>
+                                                            <input id="sphere_slider_x" type="range" class="col-9">
+                                                            <label class="col-3" for="input-maskvalue">center-y</label>
+                                                            <input id="sphere_slider_y" type="range" class="col-9">
+                                                            <label class="col-3" for="input-maskvalue">center-z</label>
+                                                            <input id="sphere_slider_z" type="range" class="col-9">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="tool container" id="boxrow">
+                                                        <div class="row g-0 text-center">
+                                                            <label class="col-3" for="box_slider_t2b">Top</label>
+                                                            <div id="box_slider_t2b" class="col-6 dualslider"></div>
+                                                            <label class="col-3" for="box_slider_t2b">Bottom</label>
+
+                                                            <label class="col-3" for="box_slider_f2b">Front</label>
+                                                            <div id="box_slider_f2b" class="col-6 dualslider"></div>
+                                                            <label class="col-3" for="box_slider_f2b">Back</label>
+
+                                                            <label class="col-3" for="box_slider_l2r">Left</label>
+                                                            <div id="box_slider_l2r" class="col-6 dualslider"></div>
+                                                            <label class="col-3" for="box_slider_l2r">Right</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="tool container">
+                                                        <div class="row g-0 text-center">
+                                                            <label class="col-3" for="cylinder_slider_t2b">Up</label>
+                                                            <div id="cylinder_slider_t2b" class="col-6 dualslider">
+                                                            </div>
+                                                            <label class="col-3" for="cylinder_slider_t2b">Down</label>
+
+                                                            <label class="col-3"
+                                                                for="cylinder_slider_radius">Radius</label>
+                                                            <input id="cylinder_slider_radius" type="range"
+                                                                class="col-9">
+                                                            <label class="col-3"
+                                                                for="cylinder_slider_x">center-x</label>
+                                                            <input id="cylinder_slider_x" type="range" class="col-9">
+                                                            <label class="col-3"
+                                                                for="cylinder_slider_y">center-y</label>
+                                                            <input id="cylinder_slider_y" type="range" class="col-9">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="tool container">
+                                                        <div class="row g-0 text-center">
+                                                            <label class="col-3" for="input-maskvalue">beta</label>
+                                                            <input type="range" class="col-9">
+                                                            <label class="col-3" for="input-maskvalue">edge</label>
+                                                            <input type="range" class="col-9">
+                                                            <label class="col-3" for="input-maskvalue">line</label>
+                                                            <input type="range" class="col-9">
+                                                        </div>
+                                                    </div>
+                                                    <div class="tool">
+                                                        <div class="row g-0 text-center">
+                                                            <label class="col-3" for="input-maskvalue">Invert</label>
+                                                            <input type="checkbox" class="col-9 custom-control-input">
+                                                        </div>
+                                                    </div>
+                                                    <div class="tool container">
+                                                        <div class="row g-0 text-center">
+                                                            <label class="col-3" for="balloon_slider_size">Size</label>
+                                                            <input id="balloon_slider_size" type="range" class="col-9">
+                                                            <label class="col-3" for="balloon_slider_x">center-x</label>
+                                                            <input id="balloon_slider_x" type="range" class="col-9">
+                                                            <label class="col-3" for="balloon_slider_y">center-y</label>
+                                                            <input id="balloon_slider_y" type="range" class="col-9">
+                                                            <label class="col-3" for="balloon_slider_z">center-z</label>
+                                                            <input id="balloon_slider_z" type="range" class="col-9">
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <hr>
+
+                                                <div class="row">
+                                                    <button id="maskBtn" class="drawerBtn">Apply</button>
+                                                    <button id="resetBtn" class="drawerBtn">Reset</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="segmentPage" class="d-flex flex-column page">
+                                    <div class="d-flex  flex-wrap" id="tools-group">
+                                        <Button class="optionBtn  active grid-3" data-name="none" data-mode="NONE">
+                                            <img width="20" title="cursor" src="img/svg/cursor.svg" class="ms-0">Pointer
+                                        </Button>
+                                        <Button class="optionBtn grid-3" data-name="brush" data-mode="BRUSH">
+                                            <img width="20" title="brush" src="img/svg/pen.svg">Brush
+                                        </Button>
+                                        <Button class="optionBtn grid-3" data-name="threshold" data-mode="THRESHOLD">
+                                            <img width="20" title="threshold" src="img/svg/threshold.svg">Threshold
+                                        </Button>
+                                        <Button class="optionBtn grid-3" data-name="region_growing"
+                                            data-mode="REGIONGROW">
+                                            <img width="20" title="region growing"
+                                                src="img/svg/regionGrowing.svg">Growing
+                                        </Button>
+                                        <Button class="optionBtn grid-3 d-none" data-name="unet"
+                                            data-mode="NONE">ML</Button>
+                                        <Button class="optionBtn grid-3" data-name="logic" data-mode="LOGIC">
+                                            <img width="20" title="logic operation" src="img/svg/logic.svg">Combine
+                                        </Button>
+                                        <Button class="optionBtn grid-3 " data-name="morph" data-mode="MORPH">
+                                            <img width="20" title="blur operation" src="img/svg/filter.svg">Smooth
+                                        </Button>
+                                        <Button class="optionBtn grid-3 d-none" data-name="scissor" data-mode="SCISSOR">
+                                            <img width="20" title="scissor" src="img/svg/filter.svg">Scissor
+                                        </Button>
+                                    </div>
+                                    <hr>
+                                    <div id="segmentPage_controlPanel" style="position:relative; height:100%">
+                                        <div class="tool d-flex" name="none"></div>
+                                        <div class="tool d-flex" name="brush">
+                                            <div id="segmentPage_controlPanel_brushMode" class="row g-0">
+                                                <button class="optionBtn grid-2 active" data-mode="MARK">Mark</button>
+                                                <button class="optionBtn grid-2" data-mode="ERASER">Eraser</button>
+                                                <button class="optionBtn grid-2 d-none" data-mode="3DMARK">3D
+                                                    Mark</button>
+                                                <button class="optionBtn grid-2 d-none" data-mode="3DERASER">3D
+                                                    Eraser</button>
+                                            </div>
+
+
+                                            <form name="brushSize">
+                                                <label>Brush Size</label>
+                                                <input type="range" min="1" max="50" class="w-100"
+                                                    onkeydown="return false;">
+                                            </form>
+
+                                            <div id="segmentPage_controlPanel_brushView"></div>
+                                        </div>
+                                        <div class="tool d-flex" name="threshold">
+
+                                            <div class="row">
+                                                <div class="col-3 h-100" style="font-size: 8px">
+                                                    <div>-colormap-</div>
+                                                    <button id="alpha_map" class="imgBtn">
+                                                        <i class="fa-solid fa-radiation"></i>
+                                                        <label>alpha</label>
+                                                    </button>
+                                                    <button id="color_map" class="imgBtn">
+                                                        <i class="fa-solid fa-palette"></i>
+                                                        <label>rainbow</label>
+                                                    </button>
+                                                </div>
+                                                <div class="col-9" id="colormapView"></div>
+                                            </div>
+
+                                            <hr>
+                                            <div id="segmentPage_transfer_method" class="row g-0">
+                                                <button class="optionBtn grid-2 active" data-mode="1D">1D</button>
+                                                <button class="optionBtn grid-2" data-mode="2D">2D</button>
+                                            </div>
+                                            <div id="1D_tf_panel">
+                                                1D transfer function:
+
+                                                <div class="d-flex">
+
+                                                    <input type="text" class="form-control"
+                                                        style="width: 60px;height: 25px;" id="input-isovalue">
+                                                    <div id="dual_slider" class="dualslider dualslider-none"><canvas
+                                                            id="thresholdTile" class="colorTile " width="256"
+                                                            height="1"></canvas></div>
+
+
+                                                    <input type="text" class="form-control"
+                                                        style="width: 60px;height: 25px;" id="input-distance">
+                                                </div>
+                                                <hr>
+                                                <button id="input-isovalue-auto" class="drawerBtn">Auto</button>
+                                                <button id="input-isovalue-apply" class="drawerBtn">Apply</button>
+                                            </div>
+                                            <div id="2D_tf_panel">
+                                                2D transfer function:
+                                                <div>
+                                                    <select id="second_data_selector" class="w-100">
+                                                        <option value="DEFAULT">----------</option>
+                                                        <option value="SIZEDATA">Size Data</option>
+                                                        <option value="GRADIENT">Gradient</option>
+                                                    </select>
+                                                </div>
+                                                <div id="transfer_layout"
+                                                    style="margin:20px;height:250px;background:black;"></div>
+                                                <hr>
+
+                                                <button id="segment_transfer_applyBtn" class="drawerBtn">Apply</button>
+                                                <div id="mag_layout"
+                                                    style="width:100%;height:250px;border:1px black solid;display:none">
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <!--Growing-->
+                                        <div class="tool d-flex" name="region_growing">
+                                            <div id="segmentPage_growing_method" class="row g-0">
+                                                <button class="optionBtn grid-2 active"
+                                                    data-mode="REGION">Region</button>
+                                                <button class="optionBtn grid-2 d-none" data-mode="BORDER">Border</button>
+                                            </div>
+                                            <hr>
+                                            <div id="growByRegion">
+                                                <form name="regionGrowingMode" class="selectorList">
+                                                    <div class="row">
+                                                        <div class="col-1">
+                                                            <input name="rg-mode" type="radio" value="NORMAL" checked>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <label>Overlay</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            基於原始影像上進行擴張，選取獨立的增長區塊
+                                                        </div>
+                                                    </div>
+    
+                                                    <div class="row">
+                                                        <div class="col-1">
+                                                            <input name="rg-mode" type="radio" value="PRESERVE">
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <label>Preserve</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            在樣板上過濾，保留獨立的增長區域
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-1">
+                                                            <input name="rg-mode" type="radio" value="REMOVE">
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <label>Remove</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            在樣板上過濾，移除獨立的增長區塊
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-1">
+                                                            <input name="rg-mode" type="radio" value="EXCLUDE">
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <label>Exclude</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            基於原始影像上，排除已選擇的區域進行擴張，選取獨立的增長區塊
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-1">
+                                                            <input name="rg-mode" type="radio" value="FILL">
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <label>Fill</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            在樣板上過濾，填充樣板上的空洞
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <hr>
+                                                <form name="regionGrowingBias" class="p-2 d-flex flex-column">
+                                                    <label id="segment_controPanel_regionGrowingBias_label"
+                                                        for="region-growing-bias">Bias:</label>
+                                                    <input id="segment_controPanel_regionGrowingBias_input" type="range">
+                                                </form>
+    
+                                            </div>
+                                            <div id="growByBorder">
+                                                
+                                            </div>
+                                            
+                                        </div>
+
+                                        <div class="tool d-none" name="unet"></div>
+                                        <div class="tool d-flex" name="logic">
+                                            Source:
+                                            <select id="tool_logic_selector" name="source" class="w-100"
+                                                data-toggle='off'>
+                                                <option value="-1" disabled selected>----------</option>
+                                            </select>
+                                            <hr>
+                                            <form name="logicFunc" class="selectorList">
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <button type="button" name="intersection"
+                                                            class="drawerBtn leftDrawer">Intersection</button>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        保留兩個樣板間相同範圍的標記
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <button type="button" name="union"
+                                                            class="drawerBtn leftDrawer">Union</button>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        合併兩個樣板上的標記
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <button type="button" name="exclusive"
+                                                            class="drawerBtn leftDrawer">Exclusive</button>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        標記兩個樣板上的非重疊區域
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <button type="button" name="boolean"
+                                                            class="drawerBtn leftDrawer">Boolean</button>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        將兩個樣板上的標記相減
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <button type="button" name="copy"
+                                                            class="drawerBtn leftDrawer">Copy</button>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        複製樣板上的標記
+                                                    </div>
+                                                </div>
+
+                                            </form>
+                                        </div>
+
+                                        <!--Blur Tools-->
+                                        <div class="tool d-flex" name="blur">
+                                            <label id="segment_filter_kernelSize_label">Kernel Size</label>
+                                            <input id="segment_filter_kernelSize_input" type="range" min="1" max="3"
+                                                step="1" value="1">
+                                            <hr>
+                                            <form name="filterForm" class="selectorList">
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <button type="button" name="erode"
+                                                            class="drawerBtn leftDrawer">Erode</button>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        侵蝕樣板，使標記區塊向內縮減
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <button type="button" name="dilate"
+                                                            class="drawerBtn leftDrawer">Dilate</button>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        擴張樣板，使標記區塊向外延伸
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <button type="button" name="medium"
+                                                            class="drawerBtn leftDrawer">Medium</button>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        平滑化處理，彌平標記邊緣
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <button type="button" name="gaussian"
+                                                            class="drawerBtn leftDrawer">Gaussian</button>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        高斯平滑化處理，彌平標記邊緣
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <button type="button" name="close"
+                                                            class="drawerBtn leftDrawer">Close</button>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        填補標記邊緣/內部缺口
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <button type="button" name="open"
+                                                            class="drawerBtn leftDrawer">Open</button>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        修補標記邊緣/內部稜角
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <!--Scissor Tools-->
+                                        <div class="tool d-none" name="scissor">
+                                            Cut Mode
+                                            <div class="row g-0">
+                                                <button class="optionBtn grid-2 active">inside</button>
+                                                <button class="optionBtn grid-2">outside</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div id="model_page" class="d-flex flex-column page">
+                                    <div id="directionBox">
+                                        <div class="cube">
+                                            <span class="top" data-order="TOP"><label>Top</label></span>
+
+                                            <span class="side" style="--i:0"
+                                                data-order="FRONT"><label>Front</label></span>
+                                            <span class="side" style="--i:1"
+                                                data-order="RIGHT"><label>Right</label></span>
+                                            <span class="side" style="--i:2"
+                                                data-order="BACK"><label>Back</label></span>
+                                            <span class="side" style="--i:3"
+                                                data-order="LEFT"><label>Left</label></span>
+
+                                            <span class="bottom" data-order="BOTTOM"><label>Bottom</label></span>
+
+                                        </div>
+                                        <div class="sphere d-none">
+                                            <div class="clip">
+                                                <div class="wrapper">
+                                                    <div class="group">
+                                                        <span class="sphereFace" style="--i:0"></span>
+                                                        <span class="sphereFace" style="--i:1"></span>
+                                                        <span class="sphereFace" style="--i:2"></span>
+                                                        <span class="sphereFace" style="--i:3"></span>
+                                                        <span class="sphereFace" style="--i:3"></span>
+                                                        <span class="sphereFace" style="--i:3"></span>
+                                                        <span class="sphereFace" style="--i:3"></span>
+                                                        <span class="sphereFace" style="--i:3"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="groupBtn" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#model_modelize" aria-expanded="true"
+                                        aria-controls="render-mode">
+                                        Modelize
+                                    </button>
+                                    <div id="model_modelize" class="accordion-collapse collapse show"
+                                        aria-labelledby="model_modelize">
+                                        <div class="accordion-body container">
+                                            <div class="row align-items-baseline">
+                                                <label class="col-6" for="showWirLine">WireLine</label>
+                                                <input type="checkbox" class="col-6" id="showWirLine">
+                                                <label class="col-6" for="showPolygen">Polygen</label>
+                                                <input type="checkbox" class="col-6" id="showPolygen">
+                                            </div>
+                                            <hr>
+                                            <div class="row align-items-baseline ">
+                                                <label class="col-6" for="HzClpFc">H-Clipping</label>
+                                                <div class="col-6 dualslider" id="HzClpFc"></div>
+                                                <label class="col-6" for="CrClpFc">C-Clipping</label>
+                                                <div class="col-6 dualslider" id="CrClpFc"></div>
+                                                <label class="col-6" for="SgClpFc">S-Clipping</label>
+                                                <div class="col-6 dualslider" id="SgClpFc"></div>
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <label class="col-6">Light:</label>
+                                                <input type="range" id="light-intensity-slider" class="col-6">
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <button class="drawerBtn" id="generate-model-btn">Generate
+                                                    Model</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="groupBtn" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#model_download" aria-expanded="true"
+                                        aria-controls="render-mode">
+                                        Download
+                                    </button>
+                                    <div id="model_download" class="accordion-collapse collapse show"
+                                        aria-labelledby="model_download">
+                                        <div class="accordion-body container">
+                                            <div class="row">
+                                                <label class="col-6">Format</label>
+                                                <select id="downloadPage_modelType" class="col-6"></select>
+                                            </div>
+                                            <hr />
+                                            <div class="row">
+                                                <button id="downloadPage_modelGen" class="drawerBtn">Download
+                                                    Model</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="display_page" class="accordion d-flex flex-column page ">
+
+
+                                </div>
+
+                                <div id="downloadPage" class="flex-column page accordion">
+
+
+                                    <button class="btn btn-collapse btn-sm btn-outline-dark" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#download_segment"
+                                        aria-expanded="true" aria-controls="render-mode">
+                                        Segment
+                                    </button>
+                                    <div id="download_segment" class="accordion-collapse collapse show"
+                                        aria-labelledby="download_segment">
+                                        <div class="accordion-body container">
+                                            <div class="row">
+                                                <label class="col-6">Format</label>
+                                                <select id="downloadPage_segmentType" class="col-6"></select>
+                                            </div>
+                                            <hr />
+                                            <div class="row">
+                                                <button id="downloadPage_singleSegGen"
+                                                    class="btn btn-sm btn-outline-dark">Generate single Segment</button>
+                                                <button id="downloadPage_multiSegGen"
+                                                    class="btn btn-sm btn-outline-dark">Generate All Segments</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="statusBar" class="d-none">
+            <button class="btn btn-sm">Model on</button>
+            <div id="statusBar_modelOn" class="verticalDiv"></div>
+
+            <button class="btn btn-sm">Volume on</button>
+            <div id="statusBar_volumeOn" class="verticalDiv"></div>
+
+            <button class="btn btn-sm">Axis on</button>
+            <div id="statusBar_axisOn" class="verticalDiv"></div>
+
+            <button class="btn btn-sm">Light on</button>
+            <div id="statusBar_lightOn" class="verticalDiv"></div>
+
+            <button id="statusBar_bodyOn" class="btn btn-sm">Body on</button>
+            <progress id="statusBar_progressBar" max="100" value="100" class="ms-auto align-self-center"
+                style="width:32vh"></progress>
+
+        </div>
+    </div>
+
+    <script type="text/javascript" src="coi-serviceworker.js"></script>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script type="text/javascript" src="js/utilities.js"></script>
+    <script type="text/javascript" src="js/gl-matrix-min.js"></script>
+    <script type="text/javascript" src="js/shader-srcs.js"></script>
+    <script type="text/javascript" src="js/daikon-min.js"></script>
+    <script type="module" src="js/jszip.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/wallat/compiled-opencvjs/v4.2.0/opencv.js" type="text/javascript"></script>
+
+    <!--tensorflow.js library-->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.4.0/dist/tf.min.js"></script>
+
+    <!--<script type="text/javascript" src="index.bundle.js"></script>-->
+    <script type="module" src="jsm/main.js"></script>
+
+</body>
+
+</html>

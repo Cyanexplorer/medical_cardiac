@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="24px"
+   height="24px"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   sodipodi:docname="box.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="35.195348"
+     inkscape:cx="5.5262986"
+     inkscape:cy="11.904983"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="216.16088 : 182.90275 : 1"
+       inkscape:vp_y="-6.0402743 : -348.71801 : 0"
+       inkscape:vp_z="6.1685433 : 183.78754 : 1"
+       inkscape:persp3d-origin="111.46371 : 200.60669 : 1"
+       id="perspective37" />
+  </defs>
+  <g
+     inkscape:label="圖層 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#000000;stroke-width:22.3508"
+       id="rect24269"
+       width="151.95497"
+       height="105.23755"
+       x="-69.493484"
+       y="87.534126"
+       transform="matrix(0.96923154,-0.24615082,0.74215697,0.67022611,0,0)" />
+    <path
+       id="rect24269-0"
+       style="stroke-width:20.3906"
+       d="M 229.58193,233.14523 79.200836,271.32444 79.024006,164.73619 229.79278,127.33236 Z"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       id="rect24269-0-7"
+       style="stroke-width:20.3906"
+       d="M 61.993816,262.2221 -10.849001,194.9493 -11.413529,87.197975 62.204666,155.63387 Z"
+       sodipodi:nodetypes="ccccc" />
+  </g>
+</svg>

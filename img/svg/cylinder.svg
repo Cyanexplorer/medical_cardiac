@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="24px"
+   height="24px"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   sodipodi:docname="cylinder.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="24.886869"
+     inkscape:cx="9.4628215"
+     inkscape:cy="14.505642"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="216.16088 : 182.90275 : 1"
+       inkscape:vp_y="-6.0402743 : -348.71801 : 0"
+       inkscape:vp_z="6.1685433 : 183.78754 : 1"
+       inkscape:persp3d-origin="111.46371 : 200.60669 : 1"
+       id="perspective37" />
+  </defs>
+  <g
+     inkscape:label="圖層 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <ellipse
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:15.8811"
+       id="path734-8"
+       cx="112.64814"
+       cy="245.64159"
+       rx="87.007195"
+       ry="40.774513" />
+    <ellipse
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:14.2274"
+       id="path734-8-6"
+       cx="112.2395"
+       cy="48.730503"
+       rx="86.758568"
+       ry="32.818512" />
+    <path
+       id="rect860"
+       style="fill-rule:evenodd;stroke-width:13.3587"
+       d="m 25.480948,79.552127 c 32.024689,37.103583 164.466482,28.056713 174.174392,0 V 246.13882 H 25.480948 Z"
+       sodipodi:nodetypes="ccccc" />
+  </g>
+</svg>

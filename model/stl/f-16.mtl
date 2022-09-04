@@ -1,0 +1,10 @@
+# Exported from 3D Builder
+
+newmtl red_0
+Kd 0.300000 0.034300 0.034300
+
+newmtl blue_0
+Kd 0.034300 0.186100 0.300000
+
+newmtl glass_0
+Kd 0.300000 0.230200 0.230200

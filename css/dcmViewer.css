@@ -1,0 +1,586 @@
+.viewer-layout {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    position: relative;
+    animation:flyout .5s;
+}
+
+.viewer-group {
+    width: 100%;
+    flex: 1 1 auto;
+    box-shadow: 2px 2px 5px rgb(0 0 0 / 50%);
+    border-radius: 10px;
+    background-color: rgb(212 217 222);
+    margin: 4px;
+    overflow: hidden;
+}
+
+.group-container{
+    width: calc(200% / 3);
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.viewer-group .small-container {
+    width: calc(100% / 2);
+    height: 50%;
+}
+
+.viewer-group .medium-container{
+    width: calc(100% / 3);
+    height: 100%;
+}
+
+.centertopView {
+    --top: 0%;
+    --left: calc(100% / 3);
+}
+
+.lefttopView {
+    --top: 0%;
+    --left: 0%;
+}
+
+.righttopView {
+    --top: 0%;
+    --left: calc(200% / 3);
+}
+
+.leftbottomView {
+    --top: 50%;
+    --left: 0%;
+}
+
+.centerbottomView {
+    --top: 50%;
+    --left: calc(100% / 3);
+}
+
+.rightbottomView {
+    --top: 50%;
+    --left: calc(200% / 3);
+}
+
+.centerViewer {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: calc(200% / 3);
+    height: 100%;
+    z-index: 99;
+    animation: flyin .5s;
+}
+
+@keyframes flyin{
+    0% {
+        position: absolute;
+        top: var(--top);
+        left: var(--left);
+        width: calc(100% / 3);
+        height: 50%;
+        z-index: 99;
+    }
+    100% {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: calc(200% / 3);
+        height: 100%;
+        z-index: 99;
+    }
+}
+
+@keyframes flyout {
+    0% {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: calc(200% / 3);
+        height: 100%;
+        z-index: 99;
+    }
+
+    100% {
+        position: absolute;
+        top: var(--top);
+        left: var(--left);
+        width: calc(100% / 3);
+        height: 50%;
+        z-index: 99;
+    }
+}
+
+.centerViewer .lftSlider .viewer-slider {
+    transition: width 0.5s;
+    width: 80vh;
+}
+
+.centerViewer .viewer-slider {
+    transition: width 0.5s;
+    width: 80%;
+}
+
+.viewer-slider {
+    -webkit-appearance: none;
+    outline: none;
+    width: 25vh;
+    /*background-color: rgb(180,180,180);*/
+    border-radius: 12px;
+}
+
+.viewer-body {
+    background-color: transparent;
+    backdrop-filter: blur(50px);
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.viewport {
+    width: 90%;
+    height: calc( 100% - 240px);
+    padding: 10px;
+    position: relative;
+}
+
+.port-full {
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+}
+
+.port-shadow canvas:nth-child(4){
+    box-shadow: rgb(0 0 0 / 40%) 10px 10px 0px, rgb(0 0 0 / 40%) 20px 20px 0px;
+    transition: box-shadow 0.5s ease-in-out;
+}
+
+.port-shadow canvas:nth-child(4):hover{
+    box-shadow: rgb(0 0 0 / 40%) 20px 20px 0px, rgb(0 0 0 / 40%) 40px 40px 0px;
+    transition: box-shadow 0.5s ease-in-out;
+}
+
+.port-shadow canvas:nth-child(3){
+    -webkit-animation: loopHint 4.2s infinite;
+    -moz-animation: loopHint 4.2s infinite;
+    -o-animation: loopHint 4.2s infinite;
+    animation: loopHint 4.2s infinite;
+}
+
+@keyframes loopHint {
+    0%{
+        opacity: 0.2;
+    }
+
+    50%{
+        opacity: 0.5;
+    }
+
+    100%{
+        opacity: 0.2;
+    }
+}
+
+.viewport canvas:first-child{
+    background-color: black;  
+}
+
+.port-alpha canvas:first-child{
+    background-color: transparent;
+    filter: drop-shadow(4px 8px 12px rgb(0 0 0 / 40%));
+    transition: filter 0.5s ease-in-out;
+}
+
+.port-alpha canvas:first-child:hover{
+    filter: drop-shadow(8px 16px 12px rgb(0 0 0 / 40%));
+    transition: filter 0.5s ease-in-out;
+}
+
+.viewport canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.scene {
+    position: absolute;
+    visibility: hidden;
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.page {
+    position:absolute;
+    top:0px;
+    right:0px;
+    width:100%;
+    height:100%;
+    visibility:hidden;
+    overflow:auto
+}
+
+.page-group {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.bodyViewer {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    height: 50%;
+    width: 320px;
+}
+
+.paintingViewer {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    display: none;
+}
+
+.r-visible {
+    -webkit-animation: flipin .25s;
+    -moz-animation: flipin .25s;
+    -o-animation: flipin .25s;
+    animation: flipin .25s;
+    visibility: visible;
+}
+
+.r-invisible {
+    -webkit-animation: flipout .25s;
+    -moz-animation: flipout .25s;
+    -o-animation: flipout .25s;
+    animation: flipout .25s;
+    visibility: hidden;
+}
+
+
+@keyframes flipin {
+    0% {
+        transform: rotateY(-90deg);
+        visibility: visible;
+        opacity: 0;
+    }
+
+    100% {
+        transform: rotateY(0deg);
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+@keyframes flipout {
+    0% {
+        transform: rotateY(0deg);
+        visibility: visible;
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotateY(90deg);
+        visibility: visible;
+        opacity: 0;
+    }
+}
+
+.t-visible {
+    -webkit-animation: movein .25s;
+    -moz-animation: movein .25s;
+    -o-animation: movein .25s;
+    animation: movein .25s;
+    visibility: visible;
+}
+
+.t-invisible {
+    -webkit-animation: moveout .25s;
+    -moz-animation: moveout .25s;
+    -o-animation: moveout .25s;
+    animation: moveout .25s;
+    visibility: hidden;
+}
+
+@keyframes movein {
+    0% {
+        transform: translateX(-1.2%);
+        visibility: visible;
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0%);
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+@keyframes moveout {
+    0% {
+        transform: translateX(0%);
+        visibility: visible;
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(1.2%);
+        visibility: visible;
+        opacity: 0;
+    }
+}
+
+.viewer-bar{
+    margin: 5px;
+    padding: 5px;
+    display:flex;
+    flex-direction:column;
+    position: absolute;
+    right: 0px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.viewer-slider::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+}
+
+.viewer-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    margin-top: 0px;
+    border-radius: 50%;
+}
+
+.viewer-slider::-webkit-slider-thumb:hover {
+    -webkit-appearance: none;
+    transform:scale(160%, 160%);
+    filter: brightness(120%);
+    transition:transform 0.5s, filter 0.5s;
+}
+
+#horizontalView input[type=range]::-webkit-slider-thumb {
+    background-color:palevioletred;
+}
+
+#horizontalView .go {
+    color:palevioletred;
+}
+
+#coronalView input[type=range]::-webkit-slider-thumb {
+    background-color: lightgreen;
+}
+
+#coronalView .go {
+    color:lightgreen;
+}
+
+#sagittalView input[type=range]::-webkit-slider-thumb {
+    background-color: lightblue;
+}
+
+#sagittalView .go {
+    color:lightblue;
+}
+
+#volumeView input[type=range]::-webkit-slider-thumb {
+    background-color: wheat;
+}
+
+#horizontalView .viewer-body {
+    background-color: rgba(216, 112, 147, 0.25);
+    border-color:palevioletred;
+}
+
+
+#coronalView .viewer-body {
+    background-color: rgba(144, 238, 144, 0.25);
+    border-color:lightgreen;
+}
+
+
+
+#sagittalView .viewer-body {
+    background-color: rgba(135, 206, 250, 0.25);
+    border-color:lightskyblue;
+}
+
+
+#volumeView .viewer-body {
+    background-color: rgba(255, 166, 0, 0.25);
+    border-color: wheat;
+}
+
+
+#cadView .viewer-body {
+    border-color: darkgrey;
+}
+
+
+#idolView .viewer-body {
+    background-color: rgba(230, 119, 253, 0.25);
+}
+
+#horizontalView .viewer-bar {
+    background-color: rgba(216, 112, 147, 0.5);
+}
+#coronalView .viewer-bar {
+    background-color: rgba(144, 238, 144, 0.5);
+}
+#sagittalView .viewer-bar {
+    background-color: rgba(135, 206, 250, 0.5);
+}
+#volumeView .viewer-bar {
+    background-color: rgba(255, 166, 0, 0.5);
+}
+#cadView .viewer-bar {
+    background-color: darkgrey;
+}
+#idolView .viewer-bar {
+    background-color: rgba(230, 119, 253, 0.5);
+}
+
+.barfunc {
+    background-color: transparent;
+    padding: 0px;
+    border: 0px;
+    margin: 4px;
+}
+
+.barfunc i{
+    color:white;
+    font-size: 22px;
+}
+
+.barfunc img{
+    width:20px;
+    height:20px;
+    filter:opacity(40%);
+    margin-top:5px;
+    margin-bottom:5px;
+}
+
+.barfunc:hover img {
+    transform: scale(150%, 150%) rotate(0deg);
+    filter: invert(1) hue-rotate(180deg);
+    transition: transform .5s, filter .5s;
+}
+
+.barfunc:hover .rotate180 {
+    transform: scale(150%, 150%) rotate(180deg);
+    filter: invert(1) hue-rotate(180deg);
+    transition: transform .5s, filter .5s;
+}
+
+.barfunc:not(:hover)  .rotate0{
+    transition : transform 0s;
+	transform : rotate(0deg);
+}
+
+.barfunc:not(:hover) .rotate180 {
+    transition: transform 0s;
+    transform: rotate(180deg);
+}
+
+.barDivider {
+    height: 0.5px;
+    width:80%;
+    margin-left: 10%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 0.5px solid;
+    border-color: #00000037;
+    border-radius: 0.25px;
+}
+
+.imgLayerInfo {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    color: white;
+    font-size: 18px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+}
+
+.imgLayerInfo img{
+    width:60px;
+    height: 60px;
+    margin: 5px;
+    background-color: rgba(255, 255, 255, 0.75);
+}
+
+.imgLayerInfo .axis-plane3D{
+    width:60px;
+    height: 60px;
+    margin: 5px;
+    background-color: rgba(255, 255, 255, 0.75);
+}
+
+.imgLayerInfo *{
+    color:white;
+}
+
+.imgLayerSlider{
+    width:100%;
+    display:flex;
+    justify-content:center; 
+    position:absolute;
+    z-index: 3;
+    align-items: center;
+}
+
+
+.btmSlider {
+    /*
+    top border = 60px
+    slider width = 12px
+    slider的錨點取最底端
+    故座標位置為(60 / 2) - (12 / 2) = 24px
+    */
+    bottom: 24px;
+}
+
+.lftSlider {
+    left: -45%;
+    top: 50%;
+    transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+}
+
+.dr2l {
+    transform: rotate(180deg);
+}
+
+.imgLayerTitle {
+    position: absolute;
+    top: 0px;
+    right: 50px;
+    color: white;
+    font-size: 24px;
+    margin:0px;
+    z-index: 3;
+}
+
+.go:hover{
+    filter: brightness(1.2);
+    transform: scale(1.5);
+    transition: transform 0.5s;
+}
+
+.goTop{
+    margin-right: 10px;
+}
+
+.goBottom{
+    margin-left: 10px;
+}

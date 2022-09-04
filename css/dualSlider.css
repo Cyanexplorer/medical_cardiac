@@ -1,0 +1,27 @@
+.lower-bound {
+    transform: rotate(180deg);
+    left: 0px;
+    z-index: 0;
+}
+
+.higher-bound {
+    right: 0px;
+    z-index: 1;
+}
+
+.dualslider {
+    position: relative;
+    width:100px;
+    height:25px;
+    flex-shrink:1;
+    flex-grow:1;
+}
+
+.dualslider-none input{
+    opacity: 0;
+}
+
+.dualslider input[type=range] {
+    position: absolute;
+    top: 6px;
+}
